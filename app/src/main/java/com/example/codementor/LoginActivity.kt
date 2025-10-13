@@ -19,6 +19,7 @@ class LoginActivity : AppCompatActivity() {
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvGoToRegister = findViewById<TextView>(R.id.tvGoToRegister)
+        val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString()
@@ -32,6 +33,8 @@ class LoginActivity : AppCompatActivity() {
             val db = dbHelper.readableDatabase
             val cursor = db.rawQuery("SELECT * FROM Users WHERE email = ? AND password = ?", arrayOf(email, password))
 
+
+            
             if (cursor.count > 0) {
                 Toast.makeText(this, "Вход успешен", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MainActivity::class.java))
@@ -45,6 +48,10 @@ class LoginActivity : AppCompatActivity() {
         tvGoToRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
             finish()
+        }
+
+        tvForgotPassword.setOnClickListener {
+            Toast.makeText(this, "Функция восстановления пароля в разработке", Toast.LENGTH_SHORT).show()
         }
     }
 }

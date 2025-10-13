@@ -36,6 +36,15 @@
         android:backgroundTint="@color/grey_button" />
 
     <TextView
+        android:id="@+id/tvForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Забыли пароль?"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <TextView
         android:id="@+id/tvGoToRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

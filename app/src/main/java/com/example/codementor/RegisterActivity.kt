@@ -18,15 +18,22 @@ class RegisterActivity : AppCompatActivity() {
         val dbHelper = DatabaseHelper(this)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
+        val etConfirmPassword = findViewById<EditText>(R.id.etConfirmPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val tvGoToLogin = findViewById<TextView>(R.id.tvGoToLogin)
 
         btnRegister.setOnClickListener {
             val email = etEmail.text.toString()
             val password = etPassword.text.toString()
+            val confirmPassword = etConfirmPassword.text.toString()
 
-            if (email.isEmpty() || password.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 Toast.makeText(this, "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (password != confirmPassword) {
+                Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -45,8 +52,7 @@ class RegisterActivity : AppCompatActivity() {
                 finish()
             }
         }
-// login: CodeMentorUser
-        // password: Code555000
+
         tvGoToLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()

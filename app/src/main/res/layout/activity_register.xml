@@ -28,6 +28,13 @@
         android:inputType="textPassword"
         android:hint="Password" />
 
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="Confirm Password" />
+
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"

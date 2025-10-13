@@ -3,13 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="24dp"
+    android:gravity="center"
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="CodeMentor"
+        android:textSize="34sp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="100dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnStartTaskSelection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Добро пожаловать в CodeMentor!"
-        android:textSize="22sp" />
+        android:text="Выбрать задачу" />
 
 </RelativeLayout>
