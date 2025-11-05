@@ -1,26 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".TaskActivity">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tvTaskTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Заголовок задачи"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:paddingTop="48dp"
+        tools:context=".TaskActivity">
 
-    <TextView
-        android:id="@+id/tvTaskDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Полное описание задачи, которое объясняет, что именно нужно сделать пользователю."
-        android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/tvTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            tools:text="Заголовок задачи" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvTaskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            tools:text="Полное описание задачи, которое объясняет, что именно нужно сделать пользователю." />
+
+        <EditText
+            android:id="@+id/etCodeEditor"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:hint="Введите ваш код здесь..."
+            android:gravity="top"
+            android:background="@android:drawable/editbox_background_normal"
+            android:padding="8dp"
+            android:minHeight="200dp"
+            android:fontFamily="monospace"
+            android:inputType="textMultiLine" />
+
+        <Button
+            android:id="@+id/btnSubmitCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Проверить решение"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/tvAiResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#EFEFEF"
+            android:padding="12dp"
+            android:text="Ответ от AI-ментора..."
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+</ScrollView>
