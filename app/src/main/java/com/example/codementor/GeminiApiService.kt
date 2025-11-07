@@ -6,6 +6,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.http.Url
@@ -18,6 +19,9 @@ data class Part(val text: String)
 data class GeminiResponse(val candidates: List<Candidate>?)
 data class Candidate(val content: Content?)
 
+data class ModelList(val models: List<Model>?)
+data class Model(val name: String, val displayName: String?)
+
 interface GeminiApiService {
     @POST
     fun generateContent(
@@ -25,12 +29,16 @@ interface GeminiApiService {
         @Body request: GeminiRequest,
         @Query("key") apiKey: String
     ): Call<GeminiResponse>
+
+    @GET("v1beta/models")
+    fun listModels(@Query("key") apiKey: String): Call<ModelList>
 }
 
 object RetrofitClient {
     private const val BASE_URL = "https://generativelanguage.googleapis.com/"
 
     val instance: GeminiApiService by lazy {
+
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 

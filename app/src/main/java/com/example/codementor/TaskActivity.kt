@@ -1,105 +1,94 @@
 package com.example.codementor
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.appcompat.widget.Toolbar
 
 class TaskActivity : AppCompatActivity() {
 
-    private lateinit var tvTaskTitle: TextView
     private lateinit var tvTaskDescription: TextView
     private lateinit var etCodeEditor: EditText
     private lateinit var btnSubmitCode: Button
-    private lateinit var tvAiResponse: TextView
 
-    private val apiKey = "AIzaSyBvr_ryPHkjb6fMwwJcEe7nVKtqDITi8vU"
+    private lateinit var responseLayout: LinearLayout
+    private lateinit var tvResponseMessage: TextView
+    private lateinit var btnGoToChat: Button
+    private lateinit var tvResponseTitle: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task)
 
-        tvTaskTitle = findViewById(R.id.tvTaskTitle)
+        val toolbar: Toolbar = findViewById(R.id.toolbar_task)
+        setSupportActionBar(toolbar)
+        val selectedLanguage = intent.getStringExtra("TASK_LANGUAGE") ?: ""
+        val selectedDifficulty = intent.getStringExtra("TASK_DIFFICULTY") ?: ""
+        supportActionBar?.title = "$selectedLanguage: $selectedDifficulty"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
         tvTaskDescription = findViewById(R.id.tvTaskDescription)
         etCodeEditor = findViewById(R.id.etCodeEditor)
         btnSubmitCode = findViewById(R.id.btnSubmitCode)
-        tvAiResponse = findViewById(R.id.tvAiResponse)
+        responseLayout = findViewById(R.id.responseLayout)
+        tvResponseMessage = findViewById(R.id.tvResponseMessage)
+        btnGoToChat = findViewById(R.id.btnGoToChat)
+        tvResponseTitle = findViewById(R.id.tvResponseTitle)
 
-        val title = intent.getStringExtra("TASK_TITLE")
         val description = intent.getStringExtra("TASK_DESCRIPTION")
-
-        tvTaskTitle.text = title
-        tvTaskDescription.text = description
+        tvTaskDescription.text = "Задача: $description"
 
         btnSubmitCode.setOnClickListener {
-            handleSubmit()
+            handleSubmission()
+        }
+
+        btnGoToChat.setOnClickListener {
+            Toast.makeText(this, "Переход в чат в разработке", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun handleSubmit() {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressedDispatcher.onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun handleSubmission() {
         val userCode = etCodeEditor.text.toString()
         if (userCode.isBlank()) {
-            Toast.makeText(this, "Поле с кодом не может быть пустым", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Введите код", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (apiKey == "YOUR_API_KEY") {
-            Toast.makeText(
-                this,
-                "Пожалуйста, вставьте ваш API ключ в TaskActivity.kt",
-                Toast.LENGTH_LONG
-            ).show()
-            return
-        }
+        etCodeEditor.visibility = View.GONE
+        btnSubmitCode.visibility = View.GONE
+        tvTaskDescription.visibility = View.GONE
 
-        btnSubmitCode.isEnabled = false
-        tvAiResponse.visibility = View.VISIBLE
-        tvAiResponse.text = "Анализирую решение..."
+        responseLayout.visibility = View.VISIBLE
 
-        val taskDescription = tvTaskDescription.text.toString()
-        val prompt = """
-        Проверь решение задачи.
-        Условие задачи: "$taskDescription".
-        Код пользователя:
-        ```
-        $userCode
-        ```
-        Твой ответ должен быть кратким:
-        1. Если решение верное, напиши: "Решение верное." и можешь предложить эталонный вариант.
-        2. Если есть ошибка, укажи на нее и объясни, как исправить.
-    """.trimIndent()
+        Handler(Looper.getMainLooper()).postDelayed({
 
-        val request = GeminiRequest(listOf(Content(listOf(Part(prompt)))))
+            val isSuccess = false
 
-        val url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent"
-
-        RetrofitClient.instance.generateContent(url, request, apiKey)
-            .enqueue(object : Callback<GeminiResponse> {
-                override fun onResponse(
-                    call: Call<GeminiResponse>,
-                    response: Response<GeminiResponse>
-                ) {
-                    btnSubmitCode.isEnabled = true
-                    if (response.isSuccessful) {
-                        val aiText =
-                            response.body()?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
-                        tvAiResponse.text = aiText ?: "Получен пустой ответ"
-                    } else {
-                        tvAiResponse.text =
-                            "Ошибка от сервера: ${response.code()} - ${response.message()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<GeminiResponse>, t: Throwable) {
-                    btnSubmitCode.isEnabled = true
-                    tvAiResponse.text = "Ошибка сети: ${t.message}"
-                }
-            })
+            if (isSuccess) {
+                tvResponseTitle.text = "Молодец! Ты справился!"
+                tvResponseMessage.text = "Код выглядит довольно хорошо! Но можно было еще лучше! Могу показать тебе более улучшенную версию."
+            } else {
+                tvResponseTitle.text = "Ты молодец! Но в коде есть ошибки"
+                tvResponseMessage.text = "В коде есть ошибки, но ничего! Давай я тебе помогу их исправить и объяснить, где ты ошибся!"
+            }
+        }, 1500)
     }
 }

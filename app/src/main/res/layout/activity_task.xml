@@ -1,64 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    tools:context=".TaskActivity">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:paddingTop="48dp"
-        tools:context=".TaskActivity">
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_task"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/tvTaskTitle"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"
-            tools:text="Заголовок задачи" />
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvTaskDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:layout_marginBottom="16dp"
-            tools:text="Полное описание задачи, которое объясняет, что именно нужно сделать пользователю." />
+            <TextView
+                android:id="@+id/tvTaskDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_background"
+                android:padding="12dp"
+                tools:text="Задача: Создать переменные a и b и сравнить..."
+                android:textSize="16sp"/>
 
-        <EditText
-            android:id="@+id/etCodeEditor"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:hint="Введите ваш код здесь..."
-            android:gravity="top"
-            android:background="@android:drawable/editbox_background_normal"
-            android:padding="8dp"
-            android:minHeight="200dp"
-            android:fontFamily="monospace"
-            android:inputType="textMultiLine" />
+            <EditText
+                android:id="@+id/etCodeEditor"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_below="@id/tvTaskDescription"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_background"
+                android:gravity="top"
+                android:hint="#include..."
+                android:padding="12dp"/>
 
-        <Button
-            android:id="@+id/btnSubmitCode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Проверить решение"
-            android:layout_marginTop="16dp"/>
+            <Button
+                android:id="@+id/btnSubmitCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Готово"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true" />
 
-        <TextView
-            android:id="@+id/tvAiResponse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="#EFEFEF"
-            android:padding="12dp"
-            android:text="Ответ от AI-ментора..."
-            android:visibility="gone"
-            tools:visibility="visible" />
+            <LinearLayout
+                android:id="@+id/responseLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:gravity="center_horizontal"
+                android:layout_centerInParent="true">
 
-    </LinearLayout>
-</ScrollView>
+                <TextView
+                    android:id="@+id/tvResponseTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_background"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginBottom="24dp"
+                    tools:text="Ты молодец! Но в коде есть ошибки"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_background"
+                    android:gravity="center"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AI"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvResponseMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_marginTop="16dp"
+                        tools:text="В коде есть ошибки, но ничего! Давай я тебе помогу их исправить!"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnGoToChat"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Написать сообщение"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>
