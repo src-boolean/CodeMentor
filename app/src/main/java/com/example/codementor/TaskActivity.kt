@@ -1,5 +1,6 @@
 package com.example.codementor
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -27,8 +28,12 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var btnGoToChat: Button
     private lateinit var tvResponseTitle: TextView
 
+
     private val apiKey = "key"
     private val apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+
+
+    private var isCheated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +46,7 @@ class TaskActivity : AppCompatActivity() {
         val selectedDifficulty = intent.getStringExtra("TASK_DIFFICULTY") ?: "Сложность"
         val taskTitle = intent.getStringExtra("TASK_TITLE") ?: "Задача"
 
-        supportActionBar?.title = "$taskTitle ($selectedDifficulty)"
+        supportActionBar?.title = "$taskTitle"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
@@ -58,34 +63,36 @@ class TaskActivity : AppCompatActivity() {
         val description = intent.getStringExtra("TASK_DESCRIPTION") ?: ""
         tvTaskDescription.text = formatAiResponse(description)
 
+
         val savedSolution = intent.getStringExtra("TASK_SOLUTION")
         if (!savedSolution.isNullOrEmpty()) {
             responseLayout.visibility = View.VISIBLE
-            tvResponseTitle.text = "Архивное решение"
+            tvResponseTitle.text = "Архив"
             tvResponseMessage.text = formatAiResponse(savedSolution)
             etCodeEditor.visibility = View.GONE
             btnSubmitCode.visibility = View.GONE
         }
 
         btnSubmitCode.setOnClickListener {
-            val code = etCodeEditor.text.toString()
-            if (code.isBlank()) {
-                Toast.makeText(this, "Введите код", Toast.LENGTH_SHORT).show()
-            } else {
-                sendPromptToGemini(
-                    "Проверь код задачи: $description. Код: $code. " +
-                            "Ответ должен быть БЕЗ жирного текста (**), используй простой текст. " +
-                            "В начале напиши 'ВЕРНО' или 'ЕСТЬ ОШИБКИ'.",
-                    true
-                )
+            val code = etCodeEditor.text.toString().trim()
+
+            // ЗАЩИТА №1: Длина кода
+            if (code.length < 10) {
+                Toast.makeText(this, "Это не решение! Напишите код.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+
+            checkCodeWithGemini(code, description)
         }
 
         btnSaveManual.setOnClickListener {
+
             val currentSolution = tvResponseMessage.text.toString()
             val isSolved = tvResponseTitle.text.toString().contains("УСПЕХ", ignoreCase = true)
+
             saveResult(taskTitle, description, currentSolution, selectedLanguage, selectedDifficulty, isSolved, 0)
-            Toast.makeText(this, "Сохранено!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Сохранено в историю", Toast.LENGTH_SHORT).show()
         }
 
         btnHelp.setOnClickListener {
@@ -101,87 +108,143 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun showHelpDialog() {
-        val options = arrayOf("Хочу подсказку", "Реши за меня с объяснением")
+        val options = arrayOf("Хочу подсказку (XP доступны)", "Реши за меня (0 XP)")
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Что не получается?")
+        builder.setTitle("Помощь ментора")
         builder.setItems(options) { _, which ->
             val taskDesc = tvTaskDescription.text.toString()
-            val language = intent.getStringExtra("TASK_LANGUAGE") ?: "C++"
-
-            val basePrompt = "Задача на языке $language: $taskDesc. Не используй Markdown форматирование (звездочки). "
+            val language = intent.getStringExtra("TASK_LANGUAGE") ?: "Code"
 
             when (which) {
-                0 -> sendPromptToGemini(basePrompt + "Дай подсказку, но не пиши код.", false)
-                1 -> sendPromptToGemini(basePrompt + "Напиши полное решение с комментариями.", false)
+                0 -> {
+
+                    sendSimplePrompt("Дай короткую подсказку (идею) к задаче на $language: $taskDesc. Не пиши код.")
+                }
+                1 -> {
+
+                    isCheated = true
+                    sendSimplePrompt("Напиши полное решение задачи на $language: $taskDesc. Объясни код.")
+                }
             }
         }
         builder.show()
     }
 
-    private fun sendPromptToGemini(prompt: String, isCheckTask: Boolean) {
+
+    private fun sendSimplePrompt(prompt: String) {
+        sendRequest(prompt) { text ->
+            tvResponseTitle.text = "Ментор"
+            tvResponseMessage.text = formatAiResponse(text)
+        }
+    }
+
+
+    private fun checkCodeWithGemini(code: String, taskDesc: String) {
+        val language = intent.getStringExtra("TASK_LANGUAGE") ?: "Code"
+
+
+        val strictPrompt = """
+            Ты строгий преподаватель по $language.
+            Ученик прислал решение задачи: "$taskDesc".
+            
+            Вот код ученика:
+            ```
+            $code
+            ```
+            
+            Твоя задача проверить:
+            1. Относится ли этот код к задаче?
+            2. Является ли это валидным кодом (а не просто случайными цифрами или словами)?
+            3. Правильно ли решена задача?
+            
+            ЕСЛИ КОД ВЕРНЫЙ: Начни ответ с фразы "[[VERDICT_OK]]". Потом похвали и покажи, как улучшить.
+            ЕСЛИ КОД НЕВЕРНЫЙ или это мусор: Начни ответ с фразы "[[VERDICT_FAIL]]". Объясни ошибку.
+        """.trimIndent()
+
+        sendRequest(strictPrompt) { text ->
+
+            if (text.contains("[[VERDICT_OK]]")) {
+
+                val cleanText = text.replace("[[VERDICT_OK]]", "").trim()
+                tvResponseMessage.text = formatAiResponse(cleanText)
+
+                if (!isCheated) {
+                    tvResponseTitle.text = "УСПЕХ! (+XP)"
+                    val xp = calculateXP()
+                    saveSuccessToHistory(cleanText, xp)
+                    Toast.makeText(applicationContext, "Вам начислено $xp XP!", Toast.LENGTH_LONG).show()
+                } else {
+                    tvResponseTitle.text = "УСПЕХ (Без XP)"
+                    saveSuccessToHistory(cleanText, 0) // Списал = 0 XP
+                    Toast.makeText(applicationContext, "Решено верно. (XP не начислен: использована помощь)", Toast.LENGTH_LONG).show()
+                }
+
+            } else {
+                
+                tvResponseTitle.text = "ЕСТЬ ОШИБКИ"
+                val cleanText = text.replace("[[VERDICT_FAIL]]", "").trim()
+                tvResponseMessage.text = formatAiResponse(cleanText)
+                Toast.makeText(applicationContext, "Код содержит ошибки", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    private fun sendRequest(prompt: String, onSuccess: (String) -> Unit) {
         btnSubmitCode.isEnabled = false
         responseLayout.visibility = View.VISIBLE
         etCodeEditor.visibility = View.GONE
         btnSubmitCode.visibility = View.GONE
 
         tvResponseTitle.text = "Анализ..."
-        tvResponseMessage.text = "Запрос отправлен..."
+        tvResponseMessage.text = "AI думает..."
 
         val request = GeminiRequest(listOf(Content(listOf(Part(prompt)))))
 
         RetrofitClient.instance.generateContent(apiUrl, request, apiKey).enqueue(object : Callback<GeminiResponse> {
             override fun onResponse(call: Call<GeminiResponse>, response: Response<GeminiResponse>) {
-                if (response.isSuccessful) {
-                    val rawText = response.body()?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text ?: "Нет ответа"
-
-                    val cleanText = formatAiResponse(rawText)
-
-                    tvResponseMessage.text = cleanText
-                    tvResponseTitle.text = "Ответ ментора"
-
-                    if (isCheckTask && (rawText.contains("ВЕРНО", ignoreCase = true) ||
-                                rawText.contains("Correct", ignoreCase = true))) {
-
-                        tvResponseTitle.text = "УСПЕХ! (+XP)"
-
-                        val diff = intent.getStringExtra("TASK_DIFFICULTY") ?: ""
-                        val xpAward = when {
-                            diff.contains("Легк") -> 10
-                            diff.contains("Норм") || diff.contains("Сред") -> 25
-                            diff.contains("Слож") || diff.contains("Тяжел") -> 40
-                            diff.contains("PRO") -> 60
-                            else -> 15
-                        }
-
-                        saveSuccessToHistory(cleanText, xpAward)
-                        Toast.makeText(applicationContext, "Вы получили $xpAward XP!", Toast.LENGTH_LONG).show()
-                    }
-                } else {
-                    tvResponseMessage.text = "Ошибка: ${response.code()}"
-                }
                 btnSubmitCode.isEnabled = true
+                if (response.isSuccessful) {
+                    val rawText = response.body()?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text ?: "Пустой ответ"
+                    onSuccess(rawText)
+                } else {
+                    tvResponseTitle.text = "Ошибка API"
+                    tvResponseMessage.text = "Код ошибки: ${response.code()}"
+                }
             }
 
             override fun onFailure(call: Call<GeminiResponse>, t: Throwable) {
-                tvResponseMessage.text = "Ошибка сети: ${t.message}"
                 btnSubmitCode.isEnabled = true
+                tvResponseTitle.text = "Ошибка сети"
+                tvResponseMessage.text = t.message
             }
         })
     }
 
+    private fun calculateXP(): Int {
+        val diff = intent.getStringExtra("TASK_DIFFICULTY") ?: ""
+        return when {
+            diff.contains("Легк") -> 15
+            diff.contains("Норм") || diff.contains("Сред") -> 30
+            diff.contains("Слож") || diff.contains("Тяжел") -> 50
+            diff.contains("PRO") -> 80
+            else -> 20
+        }
+    }
+
     private fun formatAiResponse(text: String): String {
         var result = text
-
+        // Убираем жирный шрифт Markdown
         result = result.replace(Regex("\\*\\*(.*?)\\*\\*"), "$1")
-        result = result.replace("*", "") // Убираем оставшиеся одиночные звездочки
-        result = result.replace("#", "") // Убираем заголовки Markdown
+        result = result.replace("*", "")
+        result = result.replace("#", "")
 
+        // Оформляем код
         if (result.contains("```")) {
-            result = result.replace("```cpp", "\n----- КОД -----\n")
-            result = result.replace("```nasm", "\n----- КОД -----\n")
-            result = result.replace("```", "\n---------------\n")
+            result = result.replace("```cpp", "\n--- C++ ---\n")
+            result = result.replace("```nasm", "\n--- NASM ---\n")
+            result = result.replace("```", "\n-----------\n")
         }
-
         return result.trim()
     }
 
