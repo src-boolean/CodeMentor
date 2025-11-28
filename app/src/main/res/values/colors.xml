@@ -2,5 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="grey_button">#888888</color>
+
+    <color name="grey_button">#606060</color>
+
+    <color name="primary">#5C6BC0</color>
+    <color name="primary_dark">#3949AB</color>
+    <color name="accent">#26A69A</color>
+
+    <color name="background_main">#F5F5F7</color>
+
+    <color name="diff_easy">#66BB6A</color>
+    <color name="diff_normal">#FFA726</color>
+    <color name="diff_hard">#EF5350</color>
+    <color name="diff_pro">#AB47BC</color>
+
+
+    <color name="editor_bg">#2B2B2B</color>
+    <color name="editor_text">#A9B7C6</color>
 </resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/messageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start">
+
+        <ImageView
+            android:id="@+id/ivBotAvatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_smart_toy"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/primary"
+            android:padding="4dp"
+            android:layout_marginEnd="8dp"
+            app:tint="@color/white"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSenderName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CodeMentor AI"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#757575"
+                android:layout_marginBottom="2dp"
+                android:layout_marginStart="4dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_background"
+                android:maxWidth="280dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:text="Сообщение" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

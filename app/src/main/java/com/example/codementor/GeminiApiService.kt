@@ -10,6 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.http.Url
+import java.util.concurrent.TimeUnit
 
 
 data class GeminiRequest(val contents: List<Content>)
@@ -38,17 +39,21 @@ object RetrofitClient {
     private const val BASE_URL = "https://generativelanguage.googleapis.com/"
 
     val instance: GeminiApiService by lazy {
-
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
+
         val httpClient = OkHttpClient.Builder()
-        httpClient.addInterceptor(logging)
+            .addInterceptor(logging)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
 
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient.build())
+            .client(httpClient)
             .build()
 
         retrofit.create(GeminiApiService::class.java)

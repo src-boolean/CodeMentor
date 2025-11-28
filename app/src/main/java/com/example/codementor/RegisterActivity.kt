@@ -3,6 +3,7 @@ package com.example.codementor
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -23,12 +24,22 @@ class RegisterActivity : AppCompatActivity() {
         val tvGoToLogin = findViewById<TextView>(R.id.tvGoToLogin)
 
         btnRegister.setOnClickListener {
-            val email = etEmail.text.toString()
-            val password = etPassword.text.toString()
-            val confirmPassword = etConfirmPassword.text.toString()
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+            val confirmPassword = etConfirmPassword.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 Toast.makeText(this, "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "Введите корректный Email (например: test@mail.ru)", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (password.length < 6) {
+                Toast.makeText(this, "Пароль должен быть не менее 6 символов", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -43,13 +54,19 @@ class RegisterActivity : AppCompatActivity() {
                 put("password", password)
             }
 
-            val result = db.insert("Users", null, contentValues)
-            if (result == -1L) {
-                Toast.makeText(this, "Ошибка: такой email уже занят", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Регистрация успешна!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
+            try {
+                val result = db.insert("Users", null, contentValues)
+                if (result == -1L) {
+                    Toast.makeText(this, "Ошибка: такой email уже зарегистрирован", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Регистрация успешна!", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка базы данных: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                db.close()
             }
         }
 

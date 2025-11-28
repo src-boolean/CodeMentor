@@ -3,6 +3,8 @@ package com.example.codementor
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -38,6 +40,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val mainRoot = findViewById<android.view.ViewGroup>(R.id.main_root)
+        if (mainRoot != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(mainRoot) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+                insets
+            }
+        }
+
         val navView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         navView.setOnItemSelectedListener(onNavigationItemSelectedListener)
 
@@ -53,3 +64,6 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
     }
 }
+
+// логин: user5@gmail.com
+//пароль: main555

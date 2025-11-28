@@ -1,58 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TaskActivity">
+    android:background="@color/background_main">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_task"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_task"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:titleTextColor="@color/white" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="16dp">
+
+            <TextView
+                android:text="Задание"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#757575"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/tvTaskDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_background"
-                android:padding="12dp"
-                tools:text="Задача: Создать переменные a и b и сравнить..."
+                android:background="@color/white"
+                android:padding="16dp"
+                android:elevation="2dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:text="Здесь будет условие задачи"
                 android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="end">
+
+                <Button
+                    android:id="@+id/btnHelp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Нужна помощь?"
+                    android:textColor="@color/primary"
+                    android:backgroundTint="@android:color/transparent"
+                    style="?attr/borderlessButtonStyle"/>
+
+                <Button
+                    android:id="@+id/btnSaveManual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="💾"
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            <TextView
+                android:text="Ваш код:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#757575"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
             <EditText
                 android:id="@+id/etCodeEditor"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_below="@id/tvTaskDescription"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/rounded_background"
+                android:layout_marginTop="8dp"
+                android:background="@color/editor_bg"
+                android:textColor="@color/editor_text"
                 android:gravity="top"
-                android:hint="#include..."
-                android:padding="12dp"/>
+                android:hint="// Напишите ваше решение здесь..."
+                android:textColorHint="#606060"
+                android:padding="16dp"
+                android:fontFamily="monospace"
+                android:textSize="14sp"
+                android:inputType="textMultiLine|textNoSuggestions"/>
 
             <Button
                 android:id="@+id/btnSubmitCode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Готово"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true" />
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:text="ПРОВЕРИТЬ РЕШЕНИЕ"
+                android:textStyle="bold"
+                android:backgroundTint="@color/primary"/>
 
             <LinearLayout
                 android:id="@+id/responseLayout"
@@ -60,54 +108,38 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone"
-                tools:visibility="visible"
-                android:gravity="center_horizontal"
-                android:layout_centerInParent="true">
+                android:layout_marginTop="16dp"
+                android:background="@color/white"
+                android:padding="16dp"
+                android:elevation="4dp">
 
                 <TextView
                     android:id="@+id/tvResponseTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_background"
-                    android:paddingHorizontal="24dp"
-                    android:paddingVertical="8dp"
-                    android:layout_marginBottom="24dp"
-                    tools:text="Ты молодец! Но в коде есть ошибки"/>
-
-                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/rounded_background"
-                    android:gravity="center"
-                    android:padding="24dp">
+                    android:text="Результат"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="AI"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
-
-                    <TextView
-                        android:id="@+id/tvResponseMessage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:layout_marginTop="16dp"
-                        tools:text="В коде есть ошибки, но ничего! Давай я тебе помогу их исправить!"/>
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvResponseMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="#333333"
+                    android:text="Ответ нейросети..."/>
 
                 <Button
                     android:id="@+id/btnGoToChat"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="24dp"
-                    android:text="Написать сообщение"/>
-
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/accent"
+                    android:text="Отлично" />
             </LinearLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
     </ScrollView>
-
 </LinearLayout>

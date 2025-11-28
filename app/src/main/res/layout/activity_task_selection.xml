@@ -1,49 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
-    tools:context=".TaskSelectionActivity">
+    android:background="@color/background_main">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Настройка курса"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:tabIndicatorColor="@color/primary"
+                app:tabSelectedTextColor="@color/primary">
+                <com.google.android.material.tabs.TabItem android:text="C++" />
+                <com.google.android.material.tabs.TabItem android:text="NASM" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Сложность:"
+                android:textColor="#757575"
+                android:textSize="14sp"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupDifficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEasy"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Легкий"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textColor="@color/selector_chip_text"
+                    app:chipBackgroundColor="@null"
+                    android:background="@drawable/selector_chip_bg"
+                    app:chipStrokeWidth="0dp"
+                    app:checkedIconVisible="false"
+                    android:checked="true"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMedium"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Средний"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textColor="@color/selector_chip_text"
+                    app:chipBackgroundColor="@null"
+                    android:background="@drawable/selector_chip_bg"
+                    app:chipStrokeWidth="0dp"
+                    app:checkedIconVisible="false"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipHard"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Сложный"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textColor="@color/selector_chip_text"
+                    app:chipBackgroundColor="@null"
+                    android:background="@drawable/selector_chip_bg"
+                    app:chipStrokeWidth="0dp"
+                    app:checkedIconVisible="false"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPro"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="PRO"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textColor="@color/selector_chip_text"
+                    app:chipBackgroundColor="@null"
+                    android:background="@drawable/selector_chip_bg"
+                    app:chipStrokeWidth="0dp"
+                    app:checkedIconVisible="false"/>
+
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTopics"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="16dp"
+            android:paddingBottom="80dp" />
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCustomTopic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Выберите параметры"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="48dp"/>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/primary"
+        app:tint="@color/white" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Язык программирования:"
-        android:layout_marginStart="4dp"/>
-
-    <Spinner
-        android:id="@+id/spinnerLanguage"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginBottom="24dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Уровень сложности:"
-        android:layout_marginStart="4dp"/>
-
-    <Spinner
-        android:id="@+id/spinnerDifficulty"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginBottom="48dp"/>
-
-    <Button
-        android:id="@+id/btnGenerateTask"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Найти задачу"/>
-
-</LinearLayout>
+</FrameLayout>
